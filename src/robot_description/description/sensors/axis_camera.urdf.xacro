@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="axis_camera">
+  <xacro:macro name="axis_camera">
+    <xacro:property name="cam_width" value="1600"/>
+    <xacro:property name="cam_height" value="1200"/>
+    <xacro:property name="axis_x_dimension" value="0.1"/>
+    <xacro:property name="axis_y_dimension" value="0.08"/>
+    <xacro:property name="axis_z_dimension" value="0.04"/>
+  
+    <link name="camera_link">
+			<visual>
+				<geometry>
+					<cylinder length="${axis_x_dimension}" radius="${axis_z_dimension/2}"/>
+				</geometry>
+				<origin xyz="0 0 -0.03" rpy="0 0 0"/>
+				<material name="axis_blue">
+					<color rgba="0.8 0.9 1.0 1.0"/>
+				</material>
+			</visual>
+		</link>
+		<link name="camera_link_gazebo"/>
+		<joint name="camera_link_to_camera_link_gazebo" type="fixed">
+			<parent link="camera_link"/>
+			<child link="camera_link_gazebo"/>
+			<origin xyz="0 0 0" rpy="0 ${-pi/2.0} ${pi/2.0}"/>
+		</joint>
+		</xacro:macro>
+</robot>

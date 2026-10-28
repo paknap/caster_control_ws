@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="caster">
+  <xacro:property name="L" value="0.56"/>
+  <xacro:arg name="lslidar" default="true"/>
+  <xacro:arg name="rtvsensor" default="false"/>
+  <xacro:arg name="simulator" default="false"/>
+  <xacro:arg name="lidar_view_direction" default="0.0"/>
+  <xacro:arg name="lidar_view_width" default="${2*pi}"/>
+  <xacro:include filename="$(find robot_description)/description/sensors/rtvsensor.urdf.xacro"/>
+  <xacro:include filename="$(find robot_description)/description/sensors/lslidar.urdf.xacro"/>
+  
+  <link name="base_footprint">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!-- <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="100"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial> -->
+  </link>
+
+  <link name="base_link">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <visual>
+      <origin xyz="-0.185 0 0" rpy="${pi/2} 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robot_description/description/meshes/body.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.185 0 0" rpy="${pi/2} 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robot_description/description/meshes/body.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="40"/>
+      <origin xyz="-0.185 0 0"/>
+      <inertia ixx="10" ixy="0" ixz="0" iyy="10" iyz="0" izz="10"/>
+    </inertial>
+  </link>
+  <joint name="base_footprint_base_link" type="fixed">
+    <origin xyz="0 0 0.18" rpy="0 0 0"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+  <xacro:if value="$(arg rtvsensor)">
+    <xacro:rtvsensor lidar_view_direction="$(arg lidar_view_direction)" lidar_view_width="$(arg lidar_view_width)"/>
+    <joint name="base_link_rtv_sensor" type="fixed">
+      <origin xyz="-0.4 0 0.9265" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="rtvsensor_anchor"/>
+    </joint>
+  </xacro:if>
+
+  <material name="wheel_zero_marker">
+    <color rgba="1.0 0.2 0.0 1.0"/>
+  </material>
+  <link name="left_wheel">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <!-- Joint angle zero: orange spoke points upward in the robot frame.
+         These visual-only markings rotate with the wheel link. -->
+    <visual name="left_wheel_zero_spoke">
+      <origin xyz="0 -0.078 0.078" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.022 0.156 0.004"/>
+      </geometry>
+      <material name="wheel_zero_marker"/>
+    </visual>
+    <visual name="left_wheel_zero_tread">
+      <origin xyz="0 -0.1665 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.022 0.004 0.15"/>
+      </geometry>
+      <material name="wheel_zero_marker"/>
+    </visual>
+  </link>
+  <joint name="base_link_left_wheel" type="continuous">
+    <origin xyz="0 ${L/2}  -0.025" rpy="${-pi/2} 0 0"/>
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="right_wheel">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.1665" length="0.15"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="3"/>
+      <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1"/>
+    </inertial>
+    <!-- Joint angle zero: orange spoke points upward in the robot frame.
+         These visual-only markings rotate with the wheel link. -->
+    <visual name="right_wheel_zero_spoke">
+      <origin xyz="0 -0.078 -0.078" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.022 0.156 0.004"/>
+      </geometry>
+      <material name="wheel_zero_marker"/>
+    </visual>
+    <visual name="right_wheel_zero_tread">
+      <origin xyz="0 -0.1665 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.022 0.004 0.15"/>
+      </geometry>
+      <material name="wheel_zero_marker"/>
+    </visual>
+  </link>
+  <joint name="base_link_right_wheel" type="continuous">
+    <origin xyz="0 -${L/2}  -0.025" rpy="${-pi/2} 0 0"/>
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+    <joint_properties damping="0.0" friction="0.0"/>
+  </joint>
+  <link name="right_caster">
+    <origin xyz="0 0 0" rpy="0 ${pi/2} ${pi}"/>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://robot_description/description/meshes/caster_wheel.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="base_link_right_caster" type="continuous">
+    <origin xyz="${-0.308 - 0.185} -0.145 -0.028" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="right_caster"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+  </joint>
+
+  <link name="right_caster_wheel">
+    <origin xyz="0 0 0"/>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0775" length="0.05"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0775" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="right_caster_right_caster_wheel" type="continuous">
+    <origin xyz="-0.05 0 -0.105" rpy="${pi/2} 0 0"/>
+    <parent link="right_caster"/>
+    <child link="right_caster_wheel"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+  </joint>
+
+  <link name="left_caster">
+    <origin xyz="0 0 0" rpy="0 ${pi/2} ${pi}"/>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://robot_description/description/meshes/caster_wheel.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="base_link_left_caster" type="continuous">
+    <origin xyz="${-0.308 - 0.185} 0.145 -0.028" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="left_caster"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+  </joint>
+
+  <link name="left_caster_wheel">
+    <origin xyz="0 0 0"/>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0775" length="0.05"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.0775" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+  <joint name="left_caster_left_caster_wheel" type="continuous">
+    <origin xyz="-0.05 0 -0.105" rpy="${pi/2} 0 0"/>
+    <parent link="left_caster"/>
+    <child link="left_caster_wheel"/>
+    <axis xyz="0 0 1" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:if value="$(arg lslidar)">
+    <xacro:lslidar min_angle="${$(arg lidar_view_direction) - $(arg lidar_view_width)/2}" max_angle="${$(arg lidar_view_direction) + $(arg lidar_view_width)/2}"/>
+    <joint name="base_link_laser_link" type="fixed">
+      <origin xyz="${0.35 - 0.185} 0 0.2265" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="laser_link"/>
+    </joint>  
+  </xacro:if>
+
+  <!-- 
+    Note: reference lat/lon must be specified in world SDF:
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>48.1729689</latitude_deg>
+      <longitude_deg>16.9954956</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+  -->
+  <link name="gps"/>
+  <joint name="base_link_gps" type="fixed">
+    <origin xyz="-0.4 0 0.88" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="gps"/>
+    <calibration/>
+  </joint>
+
+  <link name="imu_link"/>
+  <joint name="base_link_imu_link" type="fixed">
+    <origin xyz="-0.2 0 0.18" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <calibration/>
+  </joint>
+<!-- 
+  <link name="imu_link_gazebo"/>
+  <joint name="imu_link_imu_link_gazebo" type="fixed" >
+    <origin xyz="-0.2 0 0.18" rpy="0 0 0"/>
+    <parent link="imu_link"/>
+    <child link="imu_link_gazebo"/>
+    <calibration/>
+  </joint> -->
+  <link name="axis360">
+    <origin xyz="0 0 0" rpy="0 ${pi/2} ${pi}"/>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
+      <geometry>
+        <mesh filename="package://robot_description/description/meshes/axis360.dae" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="base_link_axis360" type="fixed">
+    <origin xyz="-0.185 0 0.18" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="axis360"/>
+    <calibration/>
+  </joint>
+
+  <!-- <ros2_control name="caster" type="system"> -->
+  </robot>

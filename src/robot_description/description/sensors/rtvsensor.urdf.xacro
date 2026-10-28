@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="rtvsensor">
+
+	<xacro:include filename="$(find robot_description)/description/sensors/velodyne.urdf.xacro"/>
+	<xacro:include filename="$(find robot_description)/description/sensors/axis360.urdf.xacro"/>
+	<xacro:include filename="$(find robot_description)/description/sensors/axis_camera.urdf.xacro"/>
+
+	<xacro:property name="rtvsensor_x_dimension" value="0.152"/>
+	<xacro:property name="rtvsensor_y_dimension" value="0.152"/>
+	<xacro:property name="rtvsensor_z_dimension" value="0.184"/>
+
+	<xacro:property name="axis_360_height" value="0.04"/>
+
+	<xacro:property name="rtvsensor_anchor_x_dimension" value="0.021"/>
+	<xacro:property name="rtvsensor_anchor_y_dimension" value="0.2"/>
+	<xacro:property name="rtvsensor_anchor_z_dimension" value="0.04"/>
+
+	<xacro:property name="camera_z_offset" value="0.063"/> <!-- hight of center of camera lens from rtvsensor center -->
+	<xacro:property name="camera_x_offset" value="0.035"/> <!-- mainly for tunning camera position relative to velodyne; this is necessary because camera image and velodyne pointcloud alignment would be dependant on object position otherwise -->
+
+	<xacro:property name="velodyne_diameter" value="0.12"/>
+	<xacro:property name="velodyne_height" value="0.08"/>
+
+	<xacro:property name="phi" value="3.141592653589"/>
+	<xacro:macro name="rtvsensor" params="lidar_view_direction:=0.0 lidar_view_width:=${2*pi}">
+		<link name="rtvsensor_anchor">
+			<visual>
+				<geometry>
+					<box size="${rtvsensor_anchor_x_dimension} ${rtvsensor_anchor_y_dimension} ${rtvsensor_anchor_z_dimension}"/>
+				</geometry>
+				<material name="rtvsensor_anchor_black">
+					<color rgba="0.0 0.0 0.0 1.0"/>
+				</material>
+			</visual>
+		</link>
+
+		<link name="rtvsensor_link">
+			<visual>
+				<geometry>
+					<box size="${rtvsensor_x_dimension} ${rtvsensor_y_dimension} ${rtvsensor_z_dimension}"/>
+				</geometry>
+				<material name="rtv_sensor_color">
+					<color rgba="0.1 0.1 0.1 1.0"/>
+				</material>
+			</visual>
+		</link>
+		<joint name="rtvsensor_anchor_to_rtvsensor" type="fixed">
+			<parent link="rtvsensor_anchor"/>
+			<child link="rtvsensor_link"/>
+			<origin xyz="${rtvsensor_x_dimension/2 + rtvsensor_anchor_x_dimension/2} 0 ${rtvsensor_anchor_z_dimension/2}" rpy="0 0 0"/>
+		</joint>
+
+		<!-- Link for the Velodyne VLP16 -->
+		<xacro:VLP-16 name="velodyne" topic="/velodyne_points" organize_cloud="false" hz="10" samples="440" gpu="false" min_angle="${lidar_view_direction - lidar_view_width/2}" max_angle="${lidar_view_direction + lidar_view_width/2}"/>
+		<joint name="rtvsensor_to_velodyne" type="fixed">
+			<parent link="rtvsensor_link"/>
+			<child link="velodyne"/>
+			<origin xyz="0 0 ${rtvsensor_z_dimension/2 + velodyne_height/2}" rpy="0 0 0"/>
+		</joint>
+
+		<xacro:axis_camera/>
+		<joint name="rtvsensor_to_camera_link" type="fixed">
+			<parent link="rtvsensor_link"/>
+			<child link="camera_link"/>
+			<origin xyz="${rtvsensor_x_dimension/2 + camera_x_offset} 0 ${camera_z_offset}" rpy="${-pi/2.0 - 0.025} 0 ${-pi/2.0 + 0.0125}"/>
+			<calibration/>
+		</joint>
+
+		<xacro:axis360/>
+		<joint name="rtvsensor_to_axis_360" type="fixed">
+			<parent link="rtvsensor_link"/>
+			<child link="axis_360"/>
+			<!--<origin xyz="0 0 ${-rtvsensor_z_dimension/2 - axis_360_height}" rpy="0 0 0" />-->
+			<!-- <origin xyz="0 0 ${-rtvsensor_z_dimension/2 - axis_360_height}" rpy="0 1.570796327 0" /> -->
+			<!-- # TODO Skynet: pouzit tuto verziu, resp. spojit ju s verziou zo simulacie -->
+			<origin xyz="0 0 ${-rtvsensor_z_dimension/2 - axis_360_height}" rpy="${-pi} 0 ${-pi*0.955/2.0}"/>
+			<calibration/>
+		</joint>
+
+	</xacro:macro>
+</robot>

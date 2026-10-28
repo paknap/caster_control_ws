@@ -1,0 +1,2 @@
+# SDK version used by the existing Caster ODrive driver and firmware.
+odrive==0.5.1

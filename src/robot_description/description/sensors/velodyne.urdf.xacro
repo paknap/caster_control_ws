@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="VLP-16">
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+	<xacro:property name="velodyne_diameter" value="0.12"/>
+	<xacro:property name="velodyne_height" value="0.08"/>
+  <xacro:macro name="VLP-16" params="name:=velodyne tf_prefix:='' topic:=/velodyne_points organize_cloud:=false hz:=10 lasers:=16 samples:=1875 collision_range:=0.3 min_range:=0.31 max_range:=130.0 noise:=0.008 min_angle:=-${M_PI} max_angle:=${M_PI} gpu:=false">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder length="${velodyne_height}" radius="${velodyne_diameter/2}"/>
+        </geometry>
+        <material name="velodyne_color">
+          <color rgba="0.75 0.8 0.85 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <!-- Gazebo requires the velodyne_gazebo_plugins package -->
+    </xacro:macro>
+</robot>

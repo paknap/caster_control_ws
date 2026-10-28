@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="axis360">
+  <xacro:macro name="axis360">
+    <xacro:property name="axis_360_diameter" value="0.152"/>
+    <xacro:property name="axis_360_height" value="0.04"/>
+
+    <link name="axis_360">
+		<visual>
+			<geometry>
+				<cylinder length="${axis_360_height}" radius="${axis_360_diameter/2}"/>
+			</geometry>
+			<origin xyz="0 0 -${axis_360_height/2}" rpy="0 0 0"/>
+			<material name="axis_360_color">
+				<color rgba="0.85 0.85 0.85 1.0"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="axis_360_rotated"/>
+	<joint name="axis_360_to_axis_360_rotated" type="fixed">
+		<parent link="axis_360"/>
+		<child link="axis_360_rotated"/>
+		<origin xyz="0 0 0" rpy="${pi/2} ${-pi/2} 0.0"/>
+	</joint>
+
+	</xacro:macro>
+</robot>

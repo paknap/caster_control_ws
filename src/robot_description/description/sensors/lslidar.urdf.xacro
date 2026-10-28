@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="lslidar">
+  <xacro:macro name="lslidar" params="min_angle:=${-pi} max_angle:=${pi}">
+    <link name="laser_link">
+      <origin xyz="0 0 0" rpy="0 ${pi/2} 0"/>
+      <visual>
+        <origin xyz="0 0 -0.041" rpy="0 0 ${pi}"/>
+        <geometry>
+          <mesh filename="package://robot_description/description/meshes/laser.dae" scale="0.01 0.01 0.01"/>
+        </geometry>
+      </visual>
+    </link>
+    <!-- <gazebo reference="laser_link">
+      <sensor type="gpu_ray" name="head_hokuyo_sensor">
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <update_rate>40</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>${min_angle}</min_angle>
+              <max_angle>${max_angle}</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.2</min>
+            <max>30.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <remapping>~/out:=/front/scan</remapping>
+            <qos>
+              <topic name="/front/scan">
+                <publisher>
+                  <reliability>reliable</reliability>
+                  <durability>transient_local</durability>
+                  <history>keep_all</history>
+                  <deadline>123</deadline>
+                  <lifespan>42</lifespan>
+                  <liveliness>manual_by_topic</liveliness>
+                  <liveliness_lease_duration>1000</liveliness_lease_duration>
+                </publisher>
+                <subscription>
+                  <reliability>reliable</reliability>
+                  <durability>volatile</durability>
+                  <history depth="3">keep_last</history>
+                </subscription>
+              </topic>
+            </qos>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+          <frame_name>laser_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo> -->
+  </xacro:macro>
+</robot>

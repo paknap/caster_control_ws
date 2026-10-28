@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="connect_on_startup"   default="true"/>
+    <arg name="calibrate_on_startup" default="false"/>
+    <arg name="engage_on_startup"    default="true"/>
+
+    <arg name="publish_odom"        default="true"/>
+    <arg name="publish_odom_tf"     default="false"/>
+    
+    <arg name="output"   default="screen"/>
+    <arg name="respawn"  default="false"/>
+
+    <arg name="robot"  default="caster"/>
+
+    <!-- Param does not support 'if' in ROS2 :/ -->
+    <node if="$(eval '\'$(var robot)\' == \'caster\'')" pkg="odrive_ros" exec="odrive_node" name="odrive" namespace="odrive" 
+            output="screen" >
+              
+        <param name="connect_on_startup"   value="$(var connect_on_startup)"/>
+        <param name="calibrate_on_startup" value="$(var calibrate_on_startup)"/>
+        <param name="engage_on_startup"    value="$(var engage_on_startup)"/>
+        
+        <param name="publish_joint_angles" value="true"/>
+        <param name="publish_odom"         value="$(var publish_odom)"/>
+        <param name="publish_odom_tf"      value="$(var publish_odom_tf)"/>
+
+        <!--Caster-->
+        <param name="wheel_track"         value="0.565"/>
+        <param name="tyre_circumference"  value="1.15"/>
+        <param name="motor_same_dir"      value="false"/>
+        <param name="gear_ratio"          value = "1" />
+        <param name="encoder_cpr"          value = "16384" />
+
+        <remap from="/cmd_vel" to="cmd_vel" />
+    </node>
+
+    <node if="$(eval '\'$(var robot)\' == \'crawler\'')" pkg="odrive_ros" exec="odrive_node" name="odrive" namespace="odrive" 
+            output="screen" >
+              
+        <param name="connect_on_startup"   value="$(var connect_on_startup)"/>
+        <param name="calibrate_on_startup" value="$(var calibrate_on_startup)"/>
+        <param name="engage_on_startup"    value="$(var engage_on_startup)"/>
+        
+        <param name="publish_joint_angles" value="true"/>
+        <param name="publish_odom"         value="$(var publish_odom)"/>
+        <param name="publish_odom_tf"      value="$(var publish_odom_tf)"/>
+
+        <!--Crawler-->
+        <param name="wheel_track"         value="0.94"/>
+        <param name="tyre_circumference"  value="0.6594"/>
+        <param name="motor_same_dir"      value="true"/>
+        <param name="gear_ratio"          value = "20" />
+        <param name="encoder_cpr"          value = "30" />
+
+        <param name="odom_calc_hz"    value = "100.0" />
+
+        <remap from="/cmd_vel" to="cmd_vel" />
+    </node>
+
+    <node if="$(eval '\'$(var robot)\' == \'ringo\' or \'$(var robot)\' == \'ringo_army\'')" pkg="odrive_ros" exec="odrive_node" name="odrive" namespace="odrive" 
+            output="screen" >
+              
+        <param name="connect_on_startup"   value="$(var connect_on_startup)"/>
+        <param name="calibrate_on_startup" value="$(var calibrate_on_startup)"/>
+        <param name="engage_on_startup"    value="$(var engage_on_startup)"/>
+        
+        <param name="publish_joint_angles" value="true"/>
+        <param name="publish_odom"         value="$(var publish_odom)"/>
+        <param name="publish_odom_tf"      value="$(var publish_odom_tf)"/>
+
+        <!--Waffle-->
+        <param name="wheel_track"         value="0.28"/>
+        <param name="tyre_circumference"  value="0.2199"/>
+        <param name="motor_same_dir"      value="false"/>
+        <param name="gear_ratio"          value = "1" />
+        <param name="encoder_cpr"          value = "16384" />
+        <param name="axis_for_right"          value = "1" />
+
+        <remap from="/cmd_vel" to="cmd_vel" />
+    </node>
+
+</launch>
